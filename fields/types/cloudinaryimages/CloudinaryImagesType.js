@@ -68,12 +68,16 @@ util.inherits(cloudinaryimages, FieldType);
 /**
  * Gets the folder for images in this field
  */
-cloudinaryimages.prototype.getFolder = function () {
+cloudinaryimages.prototype.getFolder = function (item) {
 	var folder = null;
 
 	if (keystone.get('cloudinary folders') || this.options.folder) {
 		if (typeof this.options.folder === 'string') {
-			folder = this.options.folder;
+			if (item._class === 'com.xestate.rentbot.model.Advertisement') {
+				folder = this.options.folder + '/' + item._id;
+			} else {
+				folder = this.options.folder;
+			}
 		} else {
 			folder = this.list.path + '/' + this.path;
 		}
@@ -311,7 +315,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 		if (keystone.get('env') !== 'production') {
 			uploadOptions.tags.push(tagPrefix + 'dev');
 		}
-		var folder = field.getFolder();
+		var folder = field.getFolder(item);
 		if (folder) {
 			uploadOptions.folder = folder;
 		}
